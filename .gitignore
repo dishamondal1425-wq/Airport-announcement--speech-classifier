@@ -8,7 +8,6 @@ env/
 *.mp4
 uploads/
 static/uploads/
-database/
 ffmpeg*
 *.zip
 .DS_Store
