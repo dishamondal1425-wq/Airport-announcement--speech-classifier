@@ -6,8 +6,6 @@ env/
 *.wav
 *.mp3
 *.mp4
-uploads/
-static/uploads/
 ffmpeg*
 *.zip
 .DS_Store
