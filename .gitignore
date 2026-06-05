@@ -3,7 +3,6 @@ __pycache__/
 venv/
 env/
 *.pkl
-*.csv
 *.wav
 *.mp3
 *.mp4
