@@ -24,10 +24,10 @@ app.secret_key = os.getenv("SECRET_KEY","super_secret_key_change_me")
 
 def get_db():
     return mysql.connector.connect(
-        host=os.getenv("MYSQLHOST")
-        user=os.getenv("MYSQLUSER")
-        password=os.getenv("MYSQLPASSWORD")
-        database=os.getenv("MYSQLDATABASE")
+        host=os.getenv("MYSQLHOST"),
+        user=os.getenv("MYSQLUSER"),
+        password=os.getenv("MYSQLPASSWORD"),
+        database=os.getenv("MYSQLDATABASE"),
         port=int(os.getenv("MYSQLPORT", 3306))
     )
 
@@ -1328,6 +1328,6 @@ food_menu = {
 
 if __name__ == "__main__":
     get_cursor()
-    
+
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
