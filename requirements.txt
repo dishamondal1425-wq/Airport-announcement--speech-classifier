@@ -9,4 +9,4 @@ pydub
 joblib
 reportlab
 python-dotenv
-scikit-learn
+scikit-learn=1.7.2
