@@ -32,8 +32,35 @@ def get_db():
     )
 
 def get_cursor():
+
+
     db = get_db()
     cursor = db.cursor()
+
+    # TABLE 1: food_orders
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS food_orders (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            restaurant VARCHAR(100),
+            food_name VARCHAR(100),
+            quantity INT,
+            price INT,
+            total_price INT
+        )
+    """)
+
+    # TABLE 2: ticket_bookings
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS ticket_bookings (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            passenger_name VARCHAR(100),
+            source VARCHAR(100),
+            destination VARCHAR(100),
+            flight_number VARCHAR(20),
+            travel_date DATE,
+            seat_type VARCHAR(20)
+        )
+    """)
     return db, cursor   
 
 #db = get_db()
@@ -1300,5 +1327,7 @@ food_menu = {
 
 
 if __name__ == "__main__":
+    get_cursor()
+    
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
