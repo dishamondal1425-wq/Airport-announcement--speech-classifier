@@ -1305,7 +1305,7 @@ food_menu = {
         ]
     },
     "CCD": {
-        "image": "image/restaurant/subway.png",  # Update to your actual ccd restaurant image if you have one!
+        "image": "image/restaurant/ccd.png",  # Update to your actual ccd restaurant image if you have one!
         "items": [
             {"name": "Coffee", "price": 120, "image": "image/food/coffee.png"},
             {"name": "Sandwich", "price": 180, "image": "image/food/sandwich.png"},
