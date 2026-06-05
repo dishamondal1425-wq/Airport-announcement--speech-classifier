@@ -24,10 +24,10 @@ app.secret_key = os.getenv("super_secret_key_change_me")
 
 def get_db():
     return mysql.connector.connect(
-        host=os.getenv("MYSQLHOST"),
-        user=os.getenv("MYSQLUSER"),
-        password=os.getenv("MYSQLPASSWORD"),
-        database=os.getenv("MYSQLDATABASE"),
+        host=os.getenv("mysql.railway.internal"),
+        user=os.getenv("root"),
+        password=os.getenv("HYbOHJUoERJkoxiwwixXApraxzIQvCRW"),
+        database=os.getenv("railway"),
         port=int(os.getenv("MYSQLPORT", 3306))
     )
 
