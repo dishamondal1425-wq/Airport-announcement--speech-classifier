@@ -194,30 +194,27 @@ def flight_status():
 @app.route("/food-order")
 def food_order():
 
-    cursor.execute(
-        "SELECT * FROM food_orders"
-    )
-
-    orders = cursor.fetchall()
-
-    total_bill = sum(
-        order[5] for order in orders
-    )
-
     db, cursor = get_cursor()
 
-    cursor.execute("SELECT * FROM food_orders")
-    orders = cursor.fetchall()
+    try:
+        cursor.execute("SELECT * FROM food_orders")
+        orders = cursor.fetchall()
 
-    db.close()
+        total_bill = sum(order[5] for order in orders)
 
-    return render_template(
-        "food_order.html",
-        menu=food_menu,
-        orders=orders,
-        total_bill=total_bill
-    )
+        return render_template(
+            "food_order.html",
+            menu=food_menu,
+            orders=orders,
+            total_bill=total_bill
+        )
 
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+    finally:
+        cursor.close()
+        db.close()
 
 '''@app.route("/add-food", methods=["POST"])
 def add_food():
