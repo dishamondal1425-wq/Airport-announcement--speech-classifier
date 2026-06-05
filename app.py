@@ -17,23 +17,27 @@ app = Flask(__name__)
 
 # Required for Flask session handling used in the chatbot
 #app.secret_key = "super_secret_key_change_me"
-app.secret_key = os.getenv("super_secret_key_change_me")
+app.secret_key = os.getenv("SECRET_KEY","super_secret_key_change_me")
 # ==========================================
 # MYSQL DATABASE CONNECTION
 # ==========================================
 
 def get_db():
     return mysql.connector.connect(
-        host=os.getenv("mysql.railway.internal"),
-        user=os.getenv("root"),
-        password=os.getenv("HYbOHJUoERJkoxiwwixXApraxzIQvCRW"),
-        database=os.getenv("railway"),
+        host=os.getenv("MYSQLHOST")
+        user=os.getenv("MYSQLUSER")
+        password=os.getenv("MYSQLPASSWORD")
+        database=os.getenv("MYSQLDATABASE")
         port=int(os.getenv("MYSQLPORT", 3306))
     )
 
+def get_cursor():
+    db = get_db()
+    cursor = db.cursor()
+    return db, cursor   
 
-db = get_db()
-cursor = db.cursor()
+#db = get_db()
+#cursor = db.cursor()
 # ==========================================
 # LOAD MODEL
 # ==========================================
@@ -173,6 +177,13 @@ def food_order():
         order[5] for order in orders
     )
 
+    db, cursor = get_cursor()
+
+    cursor.execute("SELECT * FROM food_orders")
+    orders = cursor.fetchall()
+
+    db.close()
+
     return render_template(
         "food_order.html",
         menu=food_menu,
@@ -181,7 +192,7 @@ def food_order():
     )
 
 
-@app.route("/add-food", methods=["POST"])
+'''@app.route("/add-food", methods=["POST"])
 def add_food():
 
     restaurant = request.form["restaurant"]
@@ -197,7 +208,8 @@ def add_food():
         quantity * price
     )
 
-    cursor.execute("""
+    
+    """cursor.execute("""
         INSERT INTO food_orders
         (
             restaurant,
@@ -215,12 +227,43 @@ def add_food():
         total_price
     ))
 
+    db.commit()"""
+
+    return redirect("/food-order")'''
+
+
+@app.route("/add-food", methods=["POST"])
+def add_food():
+
+    restaurant = request.form["restaurant"]
+    food_name = request.form["food_name"]
+    quantity = int(request.form["quantity"])
+    price = int(request.form["price"])
+
+    total_price = quantity * price
+
+    # ✅ Railway-safe DB connection (NEW WAY)
+    db, cursor = get_cursor()
+
+    cursor.execute("""
+        INSERT INTO food_orders
+        (restaurant, food_name, quantity, price, total_price)
+        VALUES (%s, %s, %s, %s, %s)
+    """, (
+        restaurant,
+        food_name,
+        quantity,
+        price,
+        total_price
+    ))
+
     db.commit()
+    db.close()
 
-    return redirect("/food-order")
+    return redirect("/food-order")    
 
 
-@app.route("/place-order")
+"""@app.route("/place-order")
 def place_order():
 
     # Clear cart after order
@@ -232,10 +275,24 @@ def place_order():
 
     return render_template(
         "order_success.html"
-    )
+    )"""
+
+@app.route("/place-order")
+def place_order():
+
+    # ✅ Railway-safe DB connection
+    db, cursor = get_cursor()
+
+    # Clear cart after order
+    cursor.execute("DELETE FROM food_orders")
+
+    db.commit()
+    db.close()
+
+    return render_template("order_success.html")
 
 
-@app.route(
+'''@app.route(
     "/ticket-booking",
     methods=["GET", "POST"]
 )
@@ -293,6 +350,61 @@ def ticket_booking():
         ))
 
         db.commit()
+
+        booking = {
+            "name": passenger_name,
+            "source": source,
+            "destination": destination,
+            "flight": flight_number,
+            "date": travel_date,
+            "seat": seat_type
+        }
+
+    return render_template(
+        "ticket_booking.html",
+        booking=booking
+    )'''
+
+
+@app.route("/ticket-booking", methods=["GET", "POST"])
+def ticket_booking():
+
+    booking = None
+
+    if request.method == "POST":
+
+        passenger_name = request.form["passenger_name"]
+        source = request.form["source"]
+        destination = request.form["destination"]
+        flight_number = request.form["flight_number"]
+        travel_date = request.form["travel_date"]
+        seat_type = request.form["seat_type"]
+
+        # ✅ Railway-safe DB connection
+        db, cursor = get_cursor()
+
+        cursor.execute("""
+            INSERT INTO ticket_bookings
+            (
+                passenger_name,
+                source,
+                destination,
+                flight_number,
+                travel_date,
+                seat_type
+            )
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (
+            passenger_name,
+            source,
+            destination,
+            flight_number,
+            travel_date,
+            seat_type
+        ))
+
+        db.commit()
+        db.close()
 
         booking = {
             "name": passenger_name,
@@ -403,11 +515,11 @@ def book_flight(
     )
 
 
-@app.route(
+'''@app.route(
     "/confirm-ticket",
     methods=["POST"]
 )
-def confirm_ticket():
+"""def confirm_ticket():
     global latest_booking
 
     passenger_name = request.form[
@@ -476,8 +588,66 @@ def confirm_ticket():
         destination=destination,
         date=travel_date,
         seat=seat_type
-    )
+    )'''
 
+
+@app.route("/confirm-ticket", methods=["POST"])
+def confirm_ticket():
+
+    global latest_booking
+
+    passenger_name = request.form["passenger_name"]
+    source = request.form["source"]
+    destination = request.form["destination"]
+    flight_number = request.form["flight_number"]
+    travel_date = request.form["travel_date"]
+    seat_type = request.form["seat_type"]
+
+    # ✅ Railway-safe DB connection
+    db, cursor = get_cursor()
+
+    cursor.execute("""
+        INSERT INTO ticket_bookings
+        (
+            passenger_name,
+            source,
+            destination,
+            flight_number,
+            travel_date,
+            seat_type
+        )
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """, (
+        passenger_name,
+        source,
+        destination,
+        flight_number,
+        travel_date,
+        seat_type
+    ))
+
+    db.commit()
+    db.close()
+
+    # store last booking in memory
+    latest_booking = {
+        "name": passenger_name,
+        "flight": flight_number,
+        "source": source,
+        "destination": destination,
+        "date": travel_date,
+        "seat": seat_type
+    }
+
+    return render_template(
+        "ticket_success.html",
+        name=passenger_name,
+        flight=flight_number,
+        source=source,
+        destination=destination,
+        date=travel_date,
+        seat=seat_type
+    )
 
 @app.route("/download-ticket")
 def download_ticket():
