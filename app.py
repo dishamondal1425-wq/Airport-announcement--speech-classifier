@@ -1293,7 +1293,7 @@ food_menu = {
         "items": [
             {"name": "Chicken Burger", "price": 150, "image": "image/food/chicken_burger.png"},
             {"name": "Fries", "price": 100, "image": "image/food/fries.png"},
-            {"name": "Chicken Wings", "price": 250, "image": "image/food/chicken_wings.png"}
+            {"name": "Chicken Wings", "price": 250, "image": "image/food/Chicken_wings.png"}
         ]
     },
     "Dominos": {
