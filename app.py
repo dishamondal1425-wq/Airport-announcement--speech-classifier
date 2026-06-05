@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 # Required for Flask session handling used in the chatbot
 #app.secret_key = "super_secret_key_change_me"
-app.secret_key = os.getenv("SECRET_KEY")
+app.secret_key = os.getenv("super_secret_key_change_me")
 # ==========================================
 # MYSQL DATABASE CONNECTION
 # ==========================================
@@ -1130,4 +1130,5 @@ food_menu = {
 
 
 if __name__ == "__main__":
-    app.run()
+    port = int(os.getenv("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
